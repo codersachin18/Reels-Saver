@@ -549,13 +549,44 @@ export default function App() {
           {videoData && !loading && (
             <div className="result-card">
               {videoData.isImage ? (
-                <img
-                  className="result-video"
-                  src={videoData.downloadUrl}
-                  alt={videoData.title}
-                  style={{width:'100%', maxHeight:'360px', objectFit:'contain', background:'#000', display:'block'}}
-                />
+                <>
+                  {/* Grid preview for carousel or single image */}
+                  <div className={`img-grid ${videoData.images?.length === 1 ? 'img-grid-single' : ''}`}>
+                    {(videoData.images || [{ url: videoData.downloadUrl, ext: 'jpg', id: 'main' }]).map((img, i) => (
+                      <div key={img.id} className="img-grid-item">
+                        <img src={img.url} alt={`Photo ${i + 1}`} />
+                        <button className="img-grid-btn" onClick={() => handleDownload(img.url, `instagram_${img.id}.${img.ext}`)}>
+                          <Download size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="result-info">
+                    <div className="result-title">{videoData.title}</div>
+                    <div className="result-meta">
+                      {videoData.uploader && `${videoData.uploader} • `}
+                      {`${videoData.images?.length || 1} Photo${(videoData.images?.length || 1) > 1 ? 's' : ''}`}
+                    </div>
+                  </div>
+                  <div className="result-actions">
+                    {(videoData.images?.length || 0) > 1 ? (
+                      videoData.images.map((img, i) => (
+                        <button key={img.id} className="download-btn" style={{marginBottom: 4}} onClick={() => handleDownload(img.url, `instagram_${img.id}.${img.ext}`)}>
+                          <Download size={16} />Photo {i + 1}
+                        </button>
+                      ))
+                    ) : (
+                      <button className="download-btn" onClick={() => handleDownload()} disabled={downloading}>
+                        {downloading ? <><div className="spin-sm" />{t.downloading}</> : <><Download size={18} />{t.downloadImage}</>}
+                      </button>
+                    )}
+                    <button className="open-btn" onClick={() => window.location.reload()}>
+                      <RefreshCw size={15} />{t.downloadAnother}
+                    </button>
+                  </div>
+                </>
               ) : (
+                <>
                 <video
                   className="result-video"
                   src={videoData.downloadUrl}
@@ -563,36 +594,26 @@ export default function App() {
                   playsInline
                   muted
                 />
-              )}
-              <div className="result-info">
-                <div className="result-title">{videoData.title}</div>
-                <div className="result-meta">
-                  {videoData.uploader && `${videoData.uploader} • `}
-                  {videoData.isImage ? `📷 Photo${videoData.images?.length > 1 ? ` (${videoData.images.length} images)` : ''}` : formatDuration(videoData.duration)}
+                <div className="result-info">
+                  <div className="result-title">{videoData.title}</div>
+                  <div className="result-meta">
+                    {videoData.uploader && `${videoData.uploader} • `}
+                    {formatDuration(videoData.duration)}
+                  </div>
                 </div>
-              </div>
-              <div className="result-actions">
-                {videoData.isImage && videoData.images?.length > 1 ? (
-                  <>
-                    {videoData.images.map((img, i) => (
-                      <button key={img.id} className="download-btn" style={{marginBottom: 4}} onClick={() => handleDownload(img.url, `instagram_${img.id}.${img.ext}`)}>
-                        <Download size={16} />Photo {i + 1}
-                      </button>
-                    ))}
-                  </>
-                ) : (
+                <div className="result-actions">
                   <button className="download-btn" onClick={() => handleDownload()} disabled={downloading}>
                     {downloading
                       ? <><div className="spin-sm" />{t.downloading}</>
-                      : <><Download size={18} />{videoData.isImage ? t.downloadImage : t.downloadVideo}</>
+                      : <><Download size={18} />{t.downloadVideo}</>
                     }
                   </button>
-                )}
-                <button className="open-btn" onClick={() => window.location.reload()}>
-                  <RefreshCw size={15} />
-                  {t.downloadAnother}
-                </button>
-              </div>
+                  <button className="open-btn" onClick={() => window.location.reload()}>
+                    <RefreshCw size={15} />{t.downloadAnother}
+                  </button>
+                </div>
+                </>
+              )}
             </div>
           )}
 
