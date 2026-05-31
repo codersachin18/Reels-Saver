@@ -111,8 +111,11 @@ const T = {
   },
 }
 
+const SUPPORTED_INSTAGRAM_URL_RE =
+  /^https?:\/\/(?:www\.|m\.)?instagram\.com\/(?:(?:reel|reels|p|tv)\/[^/?#]+|stories\/[^/?#]+(?:\/[^/?#]+)?)/
+
 function isValidUrl(url) {
-  return /https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv|stories)\/[^/]+/.test(url)
+  return SUPPORTED_INSTAGRAM_URL_RE.test(url.trim())
 }
 
 const API_BASE = import.meta.env.PROD
